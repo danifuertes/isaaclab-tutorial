@@ -1,0 +1,59 @@
+seed: 42
+
+
+# Rollout memory: https://skrl.readthedocs.io/en/latest/api/memories/random.html
+memory:
+  class: RandomMemory
+  memory_size: -1       # -1 means "same as agent:rollouts"
+
+
+# PPO agent: https://skrl.readthedocs.io/en/latest/api/agents/ppo.html
+agent:
+  class: PPO
+  rollouts: 32
+  learning_epochs: 8
+  mini_batches: 64
+  discount_factor: 0.99
+  lambda: 0.95
+  learning_rate: 1.0e-4
+
+  # Learning rate scheduler: https://skrl.readthedocs.io/en/latest/api/resources/schedulers.html
+  learning_rate_scheduler: null
+  learning_rate_scheduler_kwargs:
+    step_size: 1
+    gamma: 0.9
+  
+  state_preprocessor: null
+  state_preprocessor_kwargs: {}
+  value_preprocessor: null
+  value_preprocessor_kwargs: {}
+  random_timesteps: 0
+  learning_starts: 0
+  grad_norm_clip: 1.0
+  ratio_clip: 0.2
+  value_clip: 1.0
+  clip_predicted_values: True
+  entropy_loss_scale: 0.0
+  value_loss_scale: 1.0
+  kl_threshold: 0
+  rewards_shaper: null
+  time_limit_bootstrap: False
+  mixed_precision: False
+
+  # Logging and checkpoint
+  experiment:
+    directory: grid2d
+    experiment_name: ""
+    write_interval: auto
+    checkpoint_interval: auto
+    store_separately: False
+    wandb: False
+    wandb_kwargs: {}
+
+
+# Sequential trainer: https://skrl.readthedocs.io/en/latest/api/trainers/sequential.html
+trainer:
+  class: SequentialTrainer
+  timesteps: 100000
+  environment_info: log
+  
