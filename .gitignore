@@ -1,6 +1,6 @@
 
 # Python
-venv/
+venv*/
 __pycache__/
 *.pyc
 
@@ -8,4 +8,5 @@ __pycache__/
 .vscode/
 
 # Training
+IsaacLab/
 logs/

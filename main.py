@@ -193,7 +193,7 @@ def plot_path(path, grid_size: int = 5, index: int = 0):
     Plot the trajectory of a single agent in the grid.
     
     Args:
-        results (list): Contains a (num_envs, num_steps, 2) array of agent positions.
+        results (np.ndarray): Contains a (num_envs, num_steps, 2) array of agent positions.
         grid_size (int): Size of the grid. Defaults to 5.
         index (int): Which environment in the batch to plot. Defaults to 0.
     """
@@ -208,14 +208,14 @@ def plot_path(path, grid_size: int = 5, index: int = 0):
     plt.yticks(range(grid_size))
     
     # Plot agent trajectory
-    plt.plot(path[:, 0], path[:, 1], marker='o', color='blue', label="Agent path")
+    plt.plot(path[:, 0], path[:, 1], marker='o', color='blue', label="Path")
     
     # Start and goal markers
-    plt.scatter(path[0, 0], path[0, 1], color='green', s=100, label="Start")
-    plt.scatter(path[-1, 0], path[-1, 1], color='orange', s=120, marker='*', label="Goal")
+    plt.scatter(path[0, 0], path[0, 1], color='green', s=100, marker='s', label="Start", zorder=5)
+    plt.scatter(path[-1, 0], path[-1, 1], color='orange', s=140, marker='*', label="Goal", zorder=5)
     
     plt.legend()
-    plt.title(f"Agent {index} trajectory")
+    plt.title(f"Agent {index + 1} trajectory")
     plt.show()
 
 if __name__ == "__main__":
