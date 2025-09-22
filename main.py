@@ -216,6 +216,7 @@ def plot_path(path, grid_size: int = 5, index: int = 0):
     
     plt.legend()
     plt.title(f"Agent {index + 1} trajectory")
+    plt.savefig(f"output.png")
     plt.show()
 
 if __name__ == "__main__":

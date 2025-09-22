@@ -10,3 +10,6 @@ __pycache__/
 # Training
 IsaacLab/
 logs/
+
+# Others
+*.png

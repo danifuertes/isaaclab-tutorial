@@ -2,11 +2,24 @@
 
 This tutorial provides a comprehensive guide to getting started with [IsaacLab](https://isaac-sim.github.io/IsaacLab/main/index.html), NVIDIA's robotics simulation framework. Learn how to set up your environment, create custom environments, and train reinforcement learning agents using this powerful simulation platform.
 
-## Installation
+<div style="text-align: center;">
+  <img src="assets/grid2d-env.png" alt="Grid2D Environment">
+</div>
+
+*The Grid2D Environment: A simple 2D grid-based path planning task where an agent (green square) must navigate (blue path) to a randomly positioned goal (yellow star) as fast as possible.*
+
+## 1. Installation
 
 See the [official documentation](https://isaac-sim.github.io/IsaacLab/main/source/setup/installation/index.html) for further help.
 
-### 1. (Recommended) Pip + Source
+### 1.1. (Recommended) Pip + Source
+
+* Clone this repository:
+
+    ```bash
+    git clone git@github.com:danifuertes/isaaclab-tutorial.git
+    cd isaac-tutorial
+    ```
 
 * Create a virtual environment with `python3.11`:
 
@@ -28,7 +41,14 @@ See the [official documentation](https://isaac-sim.github.io/IsaacLab/main/sourc
     IsaacLab/isaaclab.sh -i
     ```
 
-### 2. Pip Only
+### 1.2. Pip Only
+
+* Clone this repository:
+
+    ```bash
+    git clone git@github.com:danifuertes/isaaclab-tutorial.git
+    cd isaac-tutorial
+    ```
 
 * Create a virtual environment with `python3.11`:
 
@@ -43,12 +63,59 @@ See the [official documentation](https://isaac-sim.github.io/IsaacLab/main/sourc
     pip install isaaclab[isaacsim,all]==2.2.0 --extra-index-url https://pypi.nvidia.com
     ```
 
-### 3. Docker
+### 1.3. Docker
 
+* Clone `isaaclab` repository:
 
-## Usage
+    ```bash
+    git clone git@github.com:isaac-sim/IsaacLab.git
+    cd IsaacLab
+    ```
 
-### Training
+* Create a virtual environment with `python3.11`:
+
+    ```bash
+    python3.11 -m venv venv
+    source venv/bin/activate
+    pip install --upgrade pip setuptools wheel
+    ```
+
+* Build the Docker image (you'll be prompted to choose whether to enable X11 forwarding for GUI applications. Your choice will be saved in `docker/.container.cfg`. Delete this file and build again the image to change your decision):
+):
+
+    ```bash
+    # Optional: Add --suffix <suffix> to build images with unique names
+    python docker/container.py start
+    ```
+
+* Clone this tutorial repository in the `source/` directory (this folder is mounted as a volume between host and container):
+
+    ```bash
+    cd source
+    git clone git@github.com:danifuertes/isaaclab-tutorial.git
+    cd ..
+    ```
+
+* Enter the Docker container and navigate to the tutorial:
+
+    ```bash
+    # Optional: Add --suffix <suffix> (if used during image building)
+    python docker/container.py enter
+    cd source/isaaclab-tutorial
+    ```
+
+* Follow the [Usage Section](#2-usage) to run training and evaluation scripts.
+
+* Stop the Docker container when finished:
+
+    ```bash
+    # Optional: Add --suffix <suffix> (if used during image building)
+    python docker/container.py stop
+    ```
+
+## 2. Usage
+
+### 2.1. Training
 
 Train a simple reinforcement learning agent (multilayer perceptron) on the Grid2d environment:
 
@@ -69,7 +136,7 @@ python -m torch.distributed.run \
     --model mlp
 ```
 
-### Evaluation
+### 2.2. Evaluation
 
 Test a trained agent using a saved checkpoint:
 
@@ -79,12 +146,12 @@ python main.py \
     --task grid2d-v0 \
     --model mlp \
     --num_envs 1 \
-    --checkpoint logs/grid2d/ppo/<date>/best_agent.pt
+    --checkpoint logs/grid2d/ppo/<date>/checkpoints/best_agent.pt
 ```
 
 Replace `<date>` with the actual timestamp folder created during training.
 
-### Command Line Options
+### 2.3. Command Line Options
 
 - `--headless`: Runs the simulation without GUI rendering for faster training and evaluation.
 - `--num_envs`: Number of parallel environments (default is 1024).
@@ -95,11 +162,11 @@ python train.py -h    # Training options
 python main.py -h     # Evaluation options
 ```
 
-## Creating Custom Environments
+## 3. Creating Custom Environments
 
 This tutorial demonstrates how to create custom environments using IsaacLab and [SKRL](https://skrl.readthedocs.io/en/latest/index.html). The `grid2d-v0` environment serves as an example of a simple 2D grid world implementation where an agent is required to reach the goal as soon as possible.
 
-### Environment Structure
+### 3.1. Environment Structure
 
 Custom environments require three main components:
 
@@ -107,13 +174,13 @@ Custom environments require three main components:
 2. **Environment Implementation (`Grid2DEnv`)**: Inherits from `DirectRLEnv` and implements the core environment logic.
 3. **Environment Registration**: Registers the environment with Gymnasium for use in training.
 
-### Key Files
+### 3.2. Key Files
 
 - `envs/grid2d.py`: Contains the environment configuration class and implementation
 - `envs/register.py`: Registers the environment with the id `grid2d-v0`
 - `envs/agents/skrl_cfg_grid2d.yaml`: Defines the RL agent configuration (training parameters, configuration of logs, etc.)
 
-### Environment Configuration (`DirectRLEnvCfg`)
+### 3.3. Environment Configuration (`DirectRLEnvCfg`)
 
 The environment configuration class inherits from `DirectRLEnvCfg` and defines all the mandatory parameters for your environment:
 
@@ -149,7 +216,7 @@ class Grid2DEnvCfg(DirectRLEnvCfg):
     penalty_weight: float = -0.01
 ```
 
-### Environment Implementation (`DirectRLEnv`)
+### 3.4. Environment Implementation (`DirectRLEnv`)
 
 The environment class inherits from `DirectRLEnv` and must implement the following mandatory functions:
 
@@ -201,7 +268,7 @@ Determine which environments have finished episodes.
 - **Outputs**: Tuple of (terminated, truncated) boolean tensors.
 - **Requirements**: Return termination conditions (generally, goal reached) and truncation conditions (generally, timeout).
 
-### Environment Registration
+### 3.5. Environment Registration
 
 Register your custom environment with Gymnasium to make it available for training/inference:
 
@@ -218,7 +285,7 @@ gym.register(
 
 This registration connects your environment class with a unique ID and specifies the configuration files that define both the environment definition and the training settings.
 
-### Environment Loading
+### 3.6. Environment Loading
 
 Custom environments are loaded through the `get_env()` function in the training scripts. This function handles environment instantiation, wrapping, and configuration:
 
@@ -234,11 +301,11 @@ Use your custom environment with the `--task` parameter:
 python train.py --headless --task your_env-v0 --model mlp
 ```
 
-## Creating Custom Neural Networks
+## 4. Creating Custom Neural Networks
 
 This tutorial demonstrates how to create custom neural network architectures for reinforcement learning agents using SKRL and PyTorch. The `mlp` model serves as an example of a simple multi-layer perceptron implementation.
 
-### Neural Network Structure
+### 4.1. Neural Network Structure
 
 Custom neural networks require:
 
@@ -246,12 +313,12 @@ Custom neural networks require:
 2. **Model Registration**: Adding the model to the `MODELS` dictionary for easy loading.
 3. **Integration**: Using the `load_model` function to instantiate models for training/inference.
 
-### Key Files
+### 4.2. Key Files
 
 - `nets/mlp.py`: Contains the MLP neural network implementation
 - `nets/__init__.py`: Registers available models and provides model loading functionality
 
-### Model Implementation
+### 4.3. Model Implementation
 
 Neural networks must inherit from SKRL's mixins based on the action space:
 
@@ -293,7 +360,7 @@ Disambiguate action computation for different roles (policy vs value).
 - **Outputs**: Tuple of `(output_tensor, additional_info_dictionary)`.
 - **Requirements**: Handle both policy and value computation, return appropriate shapes.
 
-### Model Registration
+### 4.4. Model Registration
 
 Add your custom model to the `MODELS` dictionary in `nets/__init__.py`:
 
@@ -307,7 +374,7 @@ MODELS = {
 }
 ```
 
-### Model Loading
+### 4.5. Model Loading
 
 The `load_model` function handles model instantiation:
 
