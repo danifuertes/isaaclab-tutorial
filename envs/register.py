@@ -11,3 +11,9 @@ gym.register(
         "skrl_cfg_entry_point": f"{agents.__name__}:skrl_cfg_grid2d.yaml",
     },
 )
+
+gym.register(
+    id="grid2d-gym-v0",
+    entry_point="envs.grid2d-gym:Grid2DEnv",
+    disable_env_checker=True,
+)

@@ -18,12 +18,12 @@ class MLP(CategoricalMixin, DeterministicMixin, Model):
         self._shared_output = None
         
         # Number of dimensions
-        self.num_dims = self.observation_space['agent'].shape[-1]
-        self.obs_dims = self.observation_space['goal'].shape[-1]
+        self.agent_dims = self.observation_space['agent'].shape[-1]
+        self.goal_dims = self.observation_space['goal'].shape[-1]
 
         # Linear embeddings
         self.agent_linear = torch.nn.Sequential(
-            torch.nn.Linear(self.num_dims, hidden_dim),
+            torch.nn.Linear(self.agent_dims, hidden_dim),
             torch.nn.LayerNorm(hidden_dim),
             torch.nn.ReLU(),
             torch.nn.Linear(hidden_dim, hidden_dim),
@@ -31,7 +31,7 @@ class MLP(CategoricalMixin, DeterministicMixin, Model):
             torch.nn.ReLU()
         )
         self.goal_linear = torch.nn.Sequential(
-            torch.nn.Linear(self.obs_dims, hidden_dim),
+            torch.nn.Linear(self.goal_dims, hidden_dim),
             torch.nn.LayerNorm(hidden_dim),
             torch.nn.ReLU(),
             torch.nn.Linear(hidden_dim, hidden_dim),
